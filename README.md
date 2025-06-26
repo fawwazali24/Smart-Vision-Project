@@ -1,11 +1,14 @@
----
-title: Robogrid
-emoji: 📚
-colorFrom: yellow
-colorTo: indigo
-sdk: docker
-pinned: false
-license: apache-2.0
+# Smart Vision: Fresh vs Packaged Item Detection
+
+A computer vision project that intelligently distinguishes between **fresh produce** and **packaged items** using YOLOv8.
+
 ---
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+## 🛠️ Features
+
+- Dual YOLO model integration for precise item classification
+- Easy-to-run Python script with support for images 
+
+
+
+
