@@ -1,0 +1,13 @@
+﻿Flask==3.0.3
+matplotlib
+numpy
+opencv-contrib-python
+opencv-python
+pandas
+requests
+gunicorn
+ultralytics
+torch
+transformers
+torchvision
+pillow

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera with ML Prediction</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+    #camera-box {
+      width: 480px;
+      height: 480px;
+      border: 2px solid black;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(1); /* Start without mirroring for back camera */
+    }
+    #prediction-box {
+      margin-top: 10px;
+      text-align: center;
+    }
+    #switch-camera, #take-picture {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Camera with ML Prediction</h1>
+  <div id="camera-box">
+    <video id="video" autoplay></video>
+  </div>
+  <div id="prediction-box">
+    <p id="prediction">Prediction: <span id="prediction-text">N/A</span></p>
+    <p id="prediction2">Prediction: <span id="prediction-text2">N/A</span></p>
+  </div>
+  <button id="switch-camera">Switch Camera</button>
+  <button id="take-picture">Take Picture</button>
+
+  <script>
+    const video = document.getElementById('video');
+    const predictionElem = document.getElementById('prediction-text');
+    const predictionElem2 = document.getElementById('prediction-text2');
+    const switchCameraBtn = document.getElementById('switch-camera');
+    const takePictureBtn = document.getElementById('take-picture');
+    let useFrontCamera = false; // Start with front-facing camera
+    // Condition to determine which prediction to show
+    const showVegetablePrediction = false; // Set to 'true' to show vegetable prediction, 'false' for YOLO detection
+
+    // Function to start the camera stream
+    function startCamera() {
+      navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: useFrontCamera ? 'user' : 'environment' // 'user' for front-facing, 'environment' for back camera
+        }
+      })
+      .then(stream => {
+        video.srcObject = stream;
+        // Flip the video if using the front-facing camera
+        video.style.transform = useFrontCamera ? 'scaleX(-1)' : 'scaleX(1)';
+      })
+      .catch(err => {
+        console.error("Error accessing the camera:", err);
+      });
+    }
+
+    // Start the camera with the front camera by default
+    startCamera();
+
+    // Switch camera button event listener
+    switchCameraBtn.addEventListener('click', () => {
+      useFrontCamera = !useFrontCamera; // Toggle camera mode
+      startCamera(); // Restart camera with the new mode
+    });
+
+    // Take picture button event listener
+    takePictureBtn.addEventListener('click', () => {
+      predictionElem.textContent = '';
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Convert the image to base64
+      const imageData = canvas.toDataURL('image/jpeg');
+      
+      if (showVegetablePrediction) {
+        // Send the image to the server for vegetable prediction
+        fetch('/predict', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ image: imageData }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          predictionElem.textContent = `Vegetable: ${data.predictions.join(', ')}`; // Update vegetable prediction
+        })
+        .catch(err => console.error('Error:', err));
+      } else {
+        // Send the image to the server for YOLO detection
+        fetch('/detect', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ image: imageData }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          predictionElem.textContent = `YOLO: ${data.predictions.join(', ')}`; // Update YOLO predictions
+        })
+        .catch(err => console.error('Error:', err));
+      }
+    });
+  </script>
+</body>
+</html>
