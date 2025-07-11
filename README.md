@@ -19,7 +19,7 @@ A real-time object detection system built for **Flipkart Grid 6.0**, leveraging 
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 | Component        | Tech Used            |
 |------------------|----------------------|
@@ -30,6 +30,6 @@ A real-time object detection system built for **Flipkart Grid 6.0**, leveraging 
 
 ---
 
-## 🏋️‍♂️ Model Training
+##  Model Training
 
 - Used Ultralytics' YOLOv8 implementation.
