@@ -32,4 +32,4 @@ A real-time object detection system built for **Flipkart Grid 6.0**, leveraging 
 
 ## 🏋️‍♂️ Model Training
 
-- Used Ultralytics' [YOLOv8] implementation.
+- Used Ultralytics' YOLOv8 implementation.
